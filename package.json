@@ -15,5 +15,14 @@
   "bugs": {
     "url": "https://github.com/hwawrzacz/raspi-shell-bridge/issues"
   },
-  "homepage": "https://github.com/hwawrzacz/raspi-shell-bridge#readme"
+  "homepage": "https://github.com/hwawrzacz/raspi-shell-bridge#readme",
+  "dependencies": {
+    "webpack": "^5.31.2",
+    "webpack-cli": "^4.6.0",
+    "ws": "^7.4.4"
+  },
+  "devDependencies": {
+    "ts-loader": "^8.1.0",
+    "typescript": "^4.2.4"
+  }
 }
