@@ -36,7 +36,7 @@ const getAndSendTemperature = (target: WebSocket): void => {
   }
 
   // `temp` is an alias which returns a current temperature
-  shell.exec('temp', handleShellCommand);
+  shell.exec('vcgencmd measure_temp | egrep -o "[0-9]+\.[0-9]+"', handleShellCommand);
 }
 
 const handleNewClientConnected = (ws: any): void => {
