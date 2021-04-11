@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/hwawrzacz/raspi-shell-bridge#readme",
   "dependencies": {
+    "rxjs": "^6.6.7",
     "ws": "^7.4.4"
   },
   "devDependencies": {
