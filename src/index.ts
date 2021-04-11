@@ -35,7 +35,8 @@ const getAndSendTemperature = (target: WebSocket): void => {
     send(target, message);
   }
 
-  shell.exec('ls', handleShellCommand);
+  // `temp` is an alias which returns a current temperature
+  shell.exec('temp', handleShellCommand);
 }
 
 const handleNewClientConnected = (ws: any): void => {
