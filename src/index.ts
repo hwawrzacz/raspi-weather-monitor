@@ -1,10 +1,10 @@
-import * as ws from 'ws';
+import * as socket from 'ws';
 
 const PORT = 3000;
-const wss = new ws.Server({ port: PORT });
+const wss = new socket.Server({ port: PORT });
 
-wss.on('connection', (ws) => {
-  ws.on('message', (message) => {
+wss.on('connection', (ws: any) => {
+  ws.on('message', (message: string) => {
     console.log(`Server received message: ${message}`);
   });
 

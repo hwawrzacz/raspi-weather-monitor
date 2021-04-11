@@ -1,9 +1,10 @@
 {
   "name": "raspi-shell-bridge",
   "version": "1.0.0",
-  "description": "",
+  "description": "Bridge for smart home app to access shell scripts",
   "main": "index.js",
   "scripts": {
+    "start": "tsc && node ./dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,11 +18,10 @@
   },
   "homepage": "https://github.com/hwawrzacz/raspi-shell-bridge#readme",
   "dependencies": {
-    "webpack": "^5.31.2",
-    "webpack-cli": "^4.6.0",
     "ws": "^7.4.4"
   },
   "devDependencies": {
+    "@types/ws": "^7.4.1",
     "ts-loader": "^8.1.0",
     "typescript": "^4.2.4"
   }
