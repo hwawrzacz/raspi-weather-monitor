@@ -19,7 +19,7 @@ export class HardwareStatusManager {
   /** Gets total and free RAM in megabytes, for example: 3789 165 */
   private readonly READ_RAM_USAGE_RASPBERRY = 'free -m | egrep "[0-9]+" -o | head -n 2 | tr "\n" " " | egrep "[0-9]+ [0-9]+"';
   /** Gets the idle CPU percentage, for example: 96.2 id */
-  private readonly READ_CPU_USAGE_RASPBERRY = 'top -n1 | head -n 3 | egrep "\%Cpu\(s\)" | tr "," "\n" | egrep "[0-9]+\.[0-9]+.+(id)"';
+  private readonly READ_CPU_USAGE_RASPBERRY = 'top -b -n1 | head -n 3 | egrep "\\%Cpu\\(s\\)" | tr "," "\\n" | egrep "[0-9]+\\.[0-9]+.+(id)"';
 
   private readonly READ_CPU_TEMPERATURE = this.READ_CPU_TEMPERATURE_RASPBERRY;
   private readonly READ_RAM_USAGE = this.READ_RAM_USAGE_RASPBERRY;
@@ -88,7 +88,7 @@ export class HardwareStatusManager {
     const handleCommandResult = (error: shell.ExecException | null, stdout: string, stderr: string): void => {
       const commandExecution = this.createShellCommand(error, stdout, stderr);
       if (commandExecution.success) {
-        const cpuIdle = parseInt(commandExecution.result.split(' ')[0]);
+        const cpuIdle = parseInt(commandExecution.result.split(' ')[1]);
         const cpuLoad = 100 - cpuIdle;
         this._hardwareStatus.cpuLoad = cpuLoad;
       }
