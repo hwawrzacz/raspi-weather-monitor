@@ -40,7 +40,11 @@ export class WebSocketManager {
   //#endregion
 
   private broadcastClientConnected(client: WebSocket): void {
+    if (this._clients.length === 0) {
+      this.anyClientAlive$.next();
+    }
     this.newClientConnected$.next(client);
+    this._clients.push(client);
   }
 
   public broadcast<T>(message: Message<T>): void {
