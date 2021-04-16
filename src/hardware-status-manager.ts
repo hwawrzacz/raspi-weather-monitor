@@ -16,8 +16,8 @@ export class HardwareStatusManager {
   private readonly READ_CPU_TEMPERATURE_RASPBERRY = 'vcgencmd measure_temp | egrep -o "[0-9]+\.[0-9]+"';
   private readonly READ_RAM_USAGE_RASPBERRY = 'free -m | egrep "[0-9]+" -o | head -n 2 | tr "\n" " " | egrep "[0-9]+ [0-9]+"';
 
-  private readonly READ_CPU_TEMPERATURE = this.READ_CPU_TEMPERATURE_WINDOWS_MOCK;
-  private readonly READ_RAM_USAGE = this.READ_RAM_USAGE_WINDOWS_MOCK;
+  private readonly READ_CPU_TEMPERATURE = this.READ_CPU_TEMPERATURE_RASPBERRY;
+  private readonly READ_RAM_USAGE = this.READ_RAM_USAGE_RASPBERRY;
   //#endregion
 
   private _hardwareStatus: HardwareStatus;
