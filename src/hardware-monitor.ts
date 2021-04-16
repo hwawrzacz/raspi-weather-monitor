@@ -1,23 +1,31 @@
-import * as socket from 'ws';
-import * as shell from 'child_process';
 import { interval, Subject } from 'rxjs';
 import { filter, switchMap, takeUntil, tap } from 'rxjs/operators';
+import * as socket from 'ws';
+import { HardwareStatus } from './model/hardware-status';
 import { Message } from './model/message';
 import { MessageType } from './model/message-type';
+import { HardwareStatusManager } from './hardware-status-manager';
 
 export const APP_PORT = 3000;
-export const CLIENTS_ACTIVITY_CHECK_INTERVAL = 60000 * 1; // 60000 * X means X minutes
+export const CLIENTS_ACTIVITY_CHECK_INTERVAL = 60000 * 5; // 60000 * X means X minutes
 
 export class HardwareMonitor {
-  private readonly RASPBERRY_SHELL_COMMAND = 'vcgencmd measure_temp | egrep -o "[0-9]+\.[0-9]+"';
-  private readonly WINDOWS_SHELL_COMMAND = 'ls';
-  private readonly SHELL_COMMAND = this.RASPBERRY_SHELL_COMMAND;
-  private _clients: WebSocket[] = [];
-  private readonly _wss = new socket.Server({ port: APP_PORT });
-  private _anyClientAlive$ = new Subject();
-  private _noClientAlive$ = new Subject();
+  private readonly _wss: socket.Server;
+  private readonly _hardwareStatus: HardwareStatus
+  private _shellExecutor: HardwareStatusManager;
+  private _clients: WebSocket[];
+  private _anyClientAlive$: Subject<void>;
+  private _noClientAlive$: Subject<void>;
 
   constructor() {
+    // Initialize default values
+    this._wss = new socket.Server({ port: APP_PORT });
+    this._shellExecutor = new HardwareStatusManager();
+    this._hardwareStatus = this._shellExecutor.hardwareStatus;
+    this._clients = [];
+    this._anyClientAlive$ = new Subject();
+    this._noClientAlive$ = new Subject();
+
     // Handle add new client client connection
     this._wss.on('connection', (client: WebSocket) => this.handleNewClientConnected(client));
 
@@ -33,47 +41,33 @@ export class HardwareMonitor {
       this._anyClientAlive$.next();
     }
     this._clients.push(client);
-    this.getAndSendTemperature(client);
+    this.sendHardwareStatus(client);
   }
 
   private observeAnyClientAlive(): void {
     this._anyClientAlive$.pipe(
       // Update temperature every 3 seconds
-      switchMap(() => interval(3000).pipe(
+      switchMap(() => interval(5000).pipe(
         takeUntil(this._noClientAlive$),
-        tap(() => this.getAndBroadcastTemperature())))
+        tap(() => this.broadcastHardwareStatus())))
     ).subscribe();
   }
 
-  private getAndBroadcastTemperature(): void {
-    const handleShellCommand = (error: shell.ExecException | null, stdout: string, stderr: string): void => {
-      const message = this.createTempResponseMessage(error, stdout, stderr);
-      this.broadcast(message);
-    }
-    shell.exec(this.SHELL_COMMAND, handleShellCommand);
+  private broadcastHardwareStatus(): void {
+    const hardwareStatusMessage = this.createHardwareStatusMessage();
+    this.broadcast(hardwareStatusMessage);
   }
 
-  private getAndSendTemperature(client: WebSocket): void {
-    const handleShellCommand = (error: shell.ExecException | null, stdout: string, stderr: string): void => {
-      const message = this.createTempResponseMessage(error, stdout, stderr);
-      this.send(client, message);
-    }
-    shell.exec(this.SHELL_COMMAND, handleShellCommand);
+  private sendHardwareStatus(client: WebSocket): void {
+    const hardwareStatusMessage = this.createHardwareStatusMessage();
+    this.send(client, hardwareStatusMessage);
   }
 
-  private createTempResponseMessage(error: shell.ExecException | null, stdout: string, stderr: string): Message {
-    return {
-      type: MessageType.TEMP_RESPONSE,
-      success: !(error || stderr),
-      response: stdout
-    } as Message;
-  }
-
-  private broadcast(message: Message): void {
+  private broadcast<T>(message: Message<T>): void {
     this._clients.forEach(client => this.send(client, message));
   }
 
-  private send(target: WebSocket, message: Message): void {
+  private send<T>(target: WebSocket, message: Message<T>): void {
     target.send(JSON.stringify(message));
   }
 
@@ -88,11 +82,21 @@ export class HardwareMonitor {
     const clientsBefore = this._clients.length;
     this._clients = this._clients.filter(client => client.readyState !== client.CLOSED);
     const clientsAfter = this._clients.length;
+
     if (clientsAfter === 0) {
       this._noClientAlive$.next();
     }
-    this.printClientsCleanoutReport(clientsBefore, clientsAfter)
 
+    this.printClientsCleanoutReport(clientsBefore, clientsAfter)
+  }
+
+  //#endregion Helpers  
+  private createHardwareStatusMessage(hardwareStatus: HardwareStatus = this._hardwareStatus): Message<HardwareStatus> {
+    return {
+      type: MessageType.HARDWARE_STATUS_RESPONSE,
+      success: true,
+      value: hardwareStatus
+    } as Message<HardwareStatus>;
   }
 
   private printClientsCleanoutReport(clientsBefore: number, clientsAfter: number): void {
@@ -102,4 +106,5 @@ export class HardwareMonitor {
     console.log('\n======== Clients cleanout ========');
     console.log(`Removed ${difference} client${difference === 1 ? '' : 's'}, ${clientsAfter} client${clientsAfter === 1 ? '' : 's'} left`);
   }
+  //#endregion
 }

@@ -1,8 +1,8 @@
 import { MessageType } from './message-type';
 
-export interface Message {
+export interface Message<T> {
   type: MessageType;
   success?: boolean;
-  response?: string;
+  value?: T;
   error?: string;
 }
