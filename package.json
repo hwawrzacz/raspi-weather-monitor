@@ -1,5 +1,5 @@
 {
-  "name": "raspi-shell-bridge",
+  "name": "raspi-weather-monitor",
   "version": "1.0.0",
   "description": "Bridge for smart home app to access shell scripts",
   "main": "index.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hwawrzacz/raspi-shell-bridge.git"
+    "url": "git+https://github.com/hwawrzacz/raspi-weather-monitor.git"
   },
   "author": "Hubert Wawrzacz",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hwawrzacz/raspi-shell-bridge/issues"
+    "url": "https://github.com/hwawrzacz/raspi-weather-monitor/issues"
   },
-  "homepage": "https://github.com/hwawrzacz/raspi-shell-bridge#readme",
+  "homepage": "https://github.com/hwawrzacz/raspi-weather-monitor#readme",
   "dependencies": {
     "rxjs": "^6.6.7",
     "ws": "^7.4.4"
