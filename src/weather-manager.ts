@@ -46,9 +46,9 @@ export class WeatherManager {
       if (commandExecution.success) {
         const [temperature, pressure, humidity] = commandExecution.result.split(';');
 
-        this._weatherData.temperature = +parseFloat(temperature).toFixed(2);
-        this._weatherData.pressure = +parseFloat(pressure).toFixed(2);
-        this._weatherData.humidity = +parseFloat(humidity).toFixed(2);
+        this._weatherData.temperature = parseInt(temperature);
+        this._weatherData.pressure = parseInt(pressure);
+        this._weatherData.humidity = parseInt(humidity);
       }
     }
     shell.exec(this.READ_WEATHER, handleCommandResult);
