@@ -15,7 +15,7 @@ export class WeatherManager {
   private readonly READ_WEATHER_RASPBERRY = 'python ~/Projects/indoor-temperature-monitor/indoor-temperature.py';
 
   private readonly READ_WEATHER = this.READ_WEATHER_RASPBERRY;
-  // private readonly READ_CPU_TEMPERATURE = this.READ_WEATHER_WINDOWS_MOCK;
+  // private readonly READ_WEATHER = this.READ_WEATHER_WINDOWS_MOCK;
   //#endregion
 
   private _weatherData: WeatherData;
@@ -44,7 +44,7 @@ export class WeatherManager {
     const handleCommandResult = (error: shell.ExecException | null, stdout: string, stderr: string): void => {
       const commandExecution = this.createShellCommand(error, stdout, stderr);
       if (commandExecution.success) {
-        const [temperature, humidity, pressure] = commandExecution.result.split(';');
+        const [temperature, pressure, humidity] = commandExecution.result.split(';');
 
         this._weatherData.temperature = +parseFloat(temperature).toFixed(2);
         this._weatherData.pressure = +parseFloat(pressure).toFixed(2);
