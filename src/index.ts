@@ -1,3 +1,3 @@
-import { HardwareMonitor } from './hardware-monitor';
+import { WeatherMonitor } from './weather-monitor';
 
-const hardwareMonitor = new HardwareMonitor();
+const weatherMonitor = new WeatherMonitor();
